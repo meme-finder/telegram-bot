@@ -1,25 +1,31 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 include:
-  - project: git-srv/pipelines
-    ref: main
-    file: Docker.gitlab-ci.yml
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
-  - template: Security/Container-Scanning.gitlab-ci.yml
-  - template: Security/License-Scanning.gitlab-ci.yml
-  - template: Security/SAST.gitlab-ci.yml
-  - template: Security/Secret-Detection.gitlab-ci.yml
-
+- project: git-srv/pipelines
+  ref: main
+  file: Docker.gitlab-ci.yml
+- template: Security/Dependency-Scanning.gitlab-ci.yml
+- template: Security/Container-Scanning.gitlab-ci.yml
+- template: Security/License-Scanning.gitlab-ci.yml
+- template: Security/SAST.gitlab-ci.yml
+- template: Security/Secret-Detection.gitlab-ci.yml
+- template: Security/SAST-IaC.latest.gitlab-ci.yml
 stages:
-  - test
-  - build
-  - container-scan
-
+- test
+- build
+- container-scan
 docker_build:
   needs: []
-
 container_scanning:
   stage: container-scan
-  needs: ['docker_build']
+  needs:
+  - docker_build
   rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  - if: "$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH"
   variables:
-    DOCKER_IMAGE: $CI_REGISTRY_IMAGE:edge
+    DOCKER_IMAGE: "$CI_REGISTRY_IMAGE:edge"
