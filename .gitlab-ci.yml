@@ -1,0 +1,25 @@
+include:
+  - project: git-srv/pipelines
+    ref: main
+    file: Docker.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Security/License-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+
+stages:
+  - test
+  - build
+  - container-scan
+
+docker_build:
+  needs: []
+
+container_scanning:
+  stage: container-scan
+  needs: ['docker_build']
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  variables:
+    DOCKER_IMAGE: $CI_REGISTRY_IMAGE:edge
