@@ -28,7 +28,7 @@ ENV PATH="/.venv/bin:$PATH"
 # Create and switch to a new user
 RUN useradd --create-home memesearch-tg
 WORKDIR /home/memesearch-tg
-USER cpmbot
+USER memesearch-tg
 
 # Install application into container
 COPY . .
