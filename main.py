@@ -1,7 +1,7 @@
 from aiogram import Bot, Dispatcher, executor, types
 import logging
 import aiohttp
-import os
+import osw
 import urllib.parse
 
 BOT_TOKEN = os.environ['TOKEN']
@@ -41,6 +41,7 @@ async def get_meme(message: types.Message):
         pics.append(link)
     for i in range(10):
         await bot.send_photo(message.chat.id, types.InputFile.from_url(pics[i]))
+    await session.close()
 
 
 if __name__ == '__main__':
