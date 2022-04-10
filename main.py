@@ -33,7 +33,7 @@ async def next_meme(message: types.Message):
 async def get_meme(message: types.Message):
     text = message.text
     session = aiohttp.ClientSession()
-    response = await session.get(f"{api_base}/images?limit=10&s={text}")
+    response = await session.get(f"{api_base}/images?limit=10&q={urllib.parse.quote(text)}")
     memes = await response.json()
     await session.close()
     for meme in memes:
