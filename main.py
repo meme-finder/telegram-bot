@@ -39,6 +39,7 @@ async def get_meme(message: types.Message):
     for meme in memes:
         link = meme['link']
         await bot.send_photo(message.chat.id, types.InputFile.from_url(link))
+    await session.close()
 
 
 if __name__ == '__main__':
