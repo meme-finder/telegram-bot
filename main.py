@@ -33,12 +33,12 @@ async def next_meme(message: types.Message):
 async def get_meme(message: types.Message):
     text = message.text
     session = aiohttp.ClientSession()
-    response = await session.get(f"{api_base}?s={urllib.parse.quote(text.encode('utf-8'))}")
+    response = await session.get(f"{api_base}/images?s={urllib.parse.quote(text.encode('utf-8'))}")
     memes = await response.json()
     res_pics = []
     for meme in memes:
-        uuid = meme['id']
-        res = await session.get(f"{api_pics}/{uuid[:1]}/{uuid[2:3]}/{uuid[4:]}")
+        link = meme['link']
+        res = await session.get(link)
         res_pics.append(res)
     for i in range(10):
         await bot.send_photo(message.chat.id, types.InputFile.from_url(res_pics[i]))
