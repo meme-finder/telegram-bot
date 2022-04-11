@@ -5,7 +5,7 @@ import aiohttp
 import os
 import urllib.parse
 
-BOT_TOKEN = '5267899048:AAHf1qikSVTAhilni6oCXePjIhv8hnGT_kg'
+BOT_TOKEN = os.environ['TOKEN']
 api_base = os.environ['API_BASE']
 api_pics = os.environ['API_PICS']
 logging.basicConfig(level=logging.INFO)
