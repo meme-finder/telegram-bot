@@ -44,7 +44,7 @@ async def get_meme(message: types.Message):
     memes = await response.json()
     await session.close()
     if len(memes) == 0:
-        await message.answer('''Error 404 meme not found''')
+        await message.answer('''Error 404 memes not found''')
     else:
         pics = types.MediaGroup()
         for meme in memes:
