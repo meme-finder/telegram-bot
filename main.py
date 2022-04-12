@@ -43,10 +43,13 @@ async def get_meme(message: types.Message):
     response = await session.get(f"{api_base}/images?limit=10&q={urllib.parse.quote(text)}")
     memes = await response.json()
     await session.close()
-    pics = types.MediaGroup()
-    for meme in memes:
-        pics.attach_photo(types.InputFile.from_url(meme['link']))
-    await bot.send_media_group(message.chat.id, media=pics)
+    if len(memes) == 0:
+        await message.answer('''Error 404 meme not found''')
+    else:
+        pics = types.MediaGroup()
+        for meme in memes:
+            pics.attach_photo(types.InputFile.from_url(meme['link']))
+        await bot.send_media_group(message.chat.id, media=pics)
 
 
 if __name__ == '__main__':
