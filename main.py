@@ -39,7 +39,7 @@ async def meme_offer(message: types.Message):
 @dp.message_handler(state=Predlozhka.wait_for_name)
 async def getting_name(message: types.Message, state: FSMContext):
     await state.update_data(meme_name=message.text)
-    await message.answer("Теперь отправьте мем одним изображением максимального разрешения")
+    await message.answer("Теперь отправьте мем одним изображением максимального разрешения")#степень сжатия по шкале шакалов 0
     await Predlozhka.wait_for_photo.set()
     print('waiting for photo')
 
