@@ -1,7 +1,6 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.dispatcher.filters import Text
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.utils.exceptions import *
 import logging
