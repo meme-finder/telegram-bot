@@ -14,8 +14,6 @@ from io import BytesIO
 
 BOT_TOKEN = os.environ['TOKEN']
 api_base = os.environ['API_BASE']
-api_pics = os.environ['API_PICS']
-api_offer = os.environ['API_OFFER']
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN)
 
@@ -58,7 +56,7 @@ async def getting_pic(message: types.Message, state: FSMContext):
         "img": img_str
     }
     session = aiohttp.ClientSession()
-    await session.post(api_offer, json=json.dumps(files))
+    await session.post(f'{api_base}/images?offer=true', json=json.dumps(files))
     await session.close()
     await message.answer("Спасибо за предложенный мем")
     await state.finish()
