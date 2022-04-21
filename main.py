@@ -43,10 +43,9 @@ async def getting_name(message: types.Message, state: FSMContext):
 
 @dp.message_handler(content_types=['photo'], state=Predlozhka.wait_for_photo)
 async def getting_pic(message: types.Message, state: FSMContext):
-    await message.photo[-1].download('picture.jpg')
-    img = bytes(open('picture.jpg'))
-
-    img_base64 = base64.b64encode(img)
+    img_bytes = BytesIO()
+    await message.photo[-1].download(img_bytes)
+    img_base64 = base64.b64encode(img_bytes.read())
     img_str = img_base64.decode('utf-8')
     data = await state.get_data()
     files = {
