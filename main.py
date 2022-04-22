@@ -98,7 +98,6 @@ async def get_meme(message: types.Message):
         for meme in memes:
             id = meme['id']
             link = f"{api_pics}/normal/{id[:2]}/{id[2:4]}/{id[4:]}.webp"
-            print(link)
             pics.attach_photo(types.InputFile.from_url(link))
         await bot.send_media_group(message.chat.id, media=pics)
 
