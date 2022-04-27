@@ -7,15 +7,12 @@ import logging
 import aiohttp
 import os
 import urllib.parse
-from PIL import Image
 import json
 import base64
 from io import BytesIO
 
 BOT_TOKEN = os.environ['TOKEN']
 api_base = os.environ['API_BASE']
-api_pics = os.environ['API_PICS']
-
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN)
 
@@ -32,19 +29,22 @@ class Predlozhka(StatesGroup):
 async def meme_offer(message: types.Message):
     await message.answer("Отправьте название мема")
     await Predlozhka.wait_for_name.set()
+    print("waiting for name")
 
 
 @dp.message_handler(state=Predlozhka.wait_for_name)
 async def getting_name(message: types.Message, state: FSMContext):
     await state.update_data(meme_name=message.text)
-    await message.answer("Теперь отправьте мем одним изображением максимального разрешения")#степень сжатия по шкале шакалов 0
-    await Predlozhka.wait_for_photo.set()
+    await message.answer(
+        "Теперь отправьте мем одним изображением максимального разрешения")  # степень сжатия по шкале шакалов 0
+    await Predlozhka.next()
+    print('waiting for photo')
 
 
-@dp.message_handler(content_types=['photo'], state=Predlozhka.wait_for_photo)
+@dp.message_handler(content_types=['document'], state=Predlozhka.wait_for_photo)
 async def getting_pic(message: types.Message, state: FSMContext):
-    img_bytes = BytesIO()
-    await message.photo[-1].download(img_bytes)
+    img = BytesIO()
+    img_bytes = await message.document.thumb.download(destination=img)
     img_base64 = base64.b64encode(img_bytes.read())
     img_str = img_base64.decode('utf-8')
     data = await state.get_data()
@@ -94,9 +94,7 @@ async def get_meme(message: types.Message):
     else:
         pics = types.MediaGroup()
         for meme in memes:
-            id = meme['id']
-            link = f"{api_pics}/normal/{id[:2]}/{id[2:4]}/{id[4:]}.webp"
-            pics.attach_photo(types.InputFile.from_url(link))
+            pics.attach_photo(types.InputFile.from_url(meme['link']))
         await bot.send_media_group(message.chat.id, media=pics)
 
 
