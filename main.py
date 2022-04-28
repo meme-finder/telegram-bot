@@ -28,7 +28,6 @@ class Predlozhka(StatesGroup):
 async def meme_offer(message: types.Message):
     await message.answer("Отправьте название мема")
     await Predlozhka.wait_for_name.set()
-    print("waiting for name")
 
 
 @dp.message_handler(state=Predlozhka.wait_for_name)
@@ -37,7 +36,6 @@ async def getting_name(message: types.Message, state: FSMContext):
     await message.answer(
         "Теперь отправьте мем одним изображением максимального разрешения")  # степень сжатия по шкале шакалов 0
     await Predlozhka.next()
-    print('waiting for photo')
 
 
 @dp.message_handler(content_types=['document'], state=Predlozhka.wait_for_photo)
@@ -49,10 +47,10 @@ async def getting_pic(message: types.Message, state: FSMContext):
     data = await state.get_data()
     files = {
         "text": data['meme_name'],
-        "img": img_str
+        "image": img_str
     }
     session = aiohttp.ClientSession()
-    await session.post(f'{api_base}/images?offer=true', json=files)
+    await session.post(f'{api_base}/images', json=files)
     await session.close()
     await message.answer("Спасибо за предложенный мем")
     await state.finish()
