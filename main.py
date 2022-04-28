@@ -7,7 +7,6 @@ import logging
 import aiohttp
 import os
 import urllib.parse
-import json
 import base64
 from io import BytesIO
 
@@ -53,7 +52,7 @@ async def getting_pic(message: types.Message, state: FSMContext):
         "img": img_str
     }
     session = aiohttp.ClientSession()
-    await session.post(f'{api_base}/images?offer=true', json=json.dumps(files))
+    await session.post(f'{api_base}/images?offer=true', json=files)
     await session.close()
     await message.answer("Спасибо за предложенный мем")
     await state.finish()
