@@ -12,6 +12,8 @@ from io import BytesIO
 
 BOT_TOKEN = os.environ['TOKEN']
 api_base = os.environ['API_BASE']
+api_pics = os.environ['API_PICS']
+
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN)
 
@@ -58,7 +60,8 @@ async def getting_pic(message: types.Message, state: FSMContext):
 
 @dp.errors_handler(exception=BotBlocked)
 async def error_bot_blocked(update: types.Update, exception: BotBlocked):
-    print(f"Меня заблокировал пользователь!\nСообщение: {update}\nОшибка: {exception}")
+    print(
+        f"Меня заблокировал пользователь!\nСообщение: {update}\nОшибка: {exception}")
     return True
 
 
@@ -91,7 +94,9 @@ async def get_meme(message: types.Message):
     else:
         pics = types.MediaGroup()
         for meme in memes:
-            pics.attach_photo(types.InputFile.from_url(meme['link']))
+            id = meme['id']
+            link = f"{api_pics}/normal/{id[:2]}/{id[2:4]}/{id[4:]}.webp"
+            pics.attach_photo(types.InputFile.from_url(link))
         await bot.send_media_group(message.chat.id, media=pics)
 
 
