@@ -21,43 +21,6 @@ storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
 
-class Predlozhka(StatesGroup):
-    wait_for_name = State()
-    wait_for_photo = State()
-
-
-@dp.message_handler(commands=['offer'], state="*")
-async def meme_offer(message: types.Message):
-    await message.answer("Отправьте название мема")
-    await Predlozhka.wait_for_name.set()
-
-
-@dp.message_handler(state=Predlozhka.wait_for_name)
-async def getting_name(message: types.Message, state: FSMContext):
-    await state.update_data(meme_name=message.text)
-    await message.answer(
-        "Теперь отправьте мем одним изображением максимального разрешения")  # степень сжатия по шкале шакалов 0
-    await Predlozhka.next()
-
-
-@dp.message_handler(content_types=['document'], state=Predlozhka.wait_for_photo)
-async def getting_pic(message: types.Message, state: FSMContext):
-    img = BytesIO()
-    img_bytes = await message.document.thumb.download(destination=img)
-    img_base64 = base64.b64encode(img_bytes.read())
-    img_str = img_base64.decode('utf-8')
-    data = await state.get_data()
-    files = {
-        "text": data['meme_name'],
-        "image": img_str
-    }
-    session = aiohttp.ClientSession()
-    await session.post(f'{api_base}/images', json=files)
-    await session.close()
-    await message.answer("Спасибо за предложенный мем")
-    await state.finish()
-
-
 @dp.errors_handler(exception=BotBlocked)
 async def error_bot_blocked(update: types.Update, exception: BotBlocked):
     print(
@@ -98,6 +61,22 @@ async def get_meme(message: types.Message):
             link = f"{api_pics}/normal/{id[:2]}/{id[2:4]}/{id[4:]}.webp"
             pics.attach_photo(types.InputFile.from_url(link))
         await bot.send_media_group(message.chat.id, media=pics)
+
+
+@dp.message_handler(content_types=['document'])
+async def post_meme(message: types.Message):
+    img = BytesIO()
+    img_bytes = await message.document.thumb.download(destination=img)
+    img_base64 = base64.b64encode(img_bytes.read())
+    img_str = img_base64.decode('utf-8')
+    files = {
+        "text": message.text,
+        "image": img_str
+    }
+    session = aiohttp.ClientSession()
+    await session.post(f'{api_base}/images', json=files)
+    await session.close()
+    await message.answer("Спасибо за предложенный мем")
 
 
 if __name__ == '__main__':
