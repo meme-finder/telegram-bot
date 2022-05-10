@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 aiogram = "2.20"
-aiohttp = "3.8.1"
+aiohttp = {extras = ["speedups"], version = "3.8.1"}
 pillow = "9.1.0"
 
 [dev-packages]
